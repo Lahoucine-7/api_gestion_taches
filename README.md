@@ -1,12 +1,12 @@
-# Création d’une API REST de gestion de tâches
+# 🗂️ Création d’une API REST de gestion de tâches
 
-## Description du Projet
+## 🧠 Description du Projet
 Ce projet consiste à développer une API REST complète pour la gestion des tâches. L'API permet d'effectuer toutes les opérations CRUD (Créer, Lire, Mettre à jour, Supprimer) sur la ressource "Tâche". Elle inclut une validation stricte des données, une gestion rigoureuse des erreurs et des tests unitaires pour assurer sa fiabilité. Le projet est réalisé dans un but d'apprentissage et n'est pas destiné à un usage en production.
 
-## Contexte d’Utilisation
+## 🎯 Contexte d’Utilisation
 Le client est une PME qui souhaite disposer d’un outil interne simple et léger pour organiser et suivre le flux de travail quotidien de ses équipes. L’API doit être sécurisée et facile à intégrer avec d'autres applications internes.
 
-## Cahier des Charges
+## 📋 Cahier des Charges
 - **Objectifs :**
   - Développer une API REST sécurisée avec des endpoints pour toutes les opérations CRUD sur les tâches.
   - Assurer une validation forte des données côté serveur et renvoyer des messages d’erreur clairs.
@@ -21,7 +21,7 @@ Le client est une PME qui souhaite disposer d’un outil interne simple et lége
   - Respect strict des normes PEP8 et des bonnes pratiques de structuration du code.
   - Utilisation de Git avec des commits atomiques et l'adoption de branches pour l'implémentation des fonctionnalités.
 
-## Stack Technologique
+## 🛠️ Stack Technologique
 - **Langage et Environnement :** Python (version ≥ 3.9) avec gestion d'environnement virtuel (venv ou virtualenv)
 - **Framework :** Flask (pour la création de l'API REST)
 - **Base de Données :** SQLite (idéal pour le prototypage)
@@ -29,7 +29,7 @@ Le client est une PME qui souhaite disposer d’un outil interne simple et lége
 - **Tests Unitaires :** Pytest
 - **Versionnement :** Git
 
-## Installation et Configuration
+## ⚙️ Installation et Configuration
 
 ### Cloner le dépôt
 ```bash
@@ -58,7 +58,7 @@ Pour forcer l'initialisation manuellement en développement :
 python -m app.db_init
 ```
 
-## Utilisation de l'API
+## 🚀 Utilisation de l'API
 
 ### Démarrer l'application
 ```bash
@@ -106,7 +106,7 @@ L'application sera disponible par défaut à l'adresse :
   - `DELETE /api/tasks/<id>`  
     Supprime la tâche et renvoie un message de confirmation.
 
-## Exécution des Tests Unitaires
+## 🧪 Exécution des Tests Unitaires
 
 Pour lancer les tests, assurez-vous d'être dans le répertoire racine du projet et exécutez :
 ```bash
@@ -114,7 +114,7 @@ pytest
 ```
 Les tests se trouvent dans le dossier `tests/` et couvrent l'ensemble des opérations CRUD.
 
-## Remarques et Évolutions Futures
+## 🔮 Remarques et Évolutions Futures
 - Ce projet est un projet personnel réalisé dans un but d'apprentissage et n'est pas destiné à un usage en production.
 
 - **Évolutions possibles :**
@@ -123,5 +123,5 @@ Les tests se trouvent dans le dossier `tests/` et couvrent l'ensemble des opéra
   - Documentation interactive avec Swagger/OpenAPI.
   - Containerisation (Docker) pour faciliter le déploiement.
 
-## Licence
+## 📄 Licence
 Ce projet est un projet personnel réalisé dans un but d'apprentissage. Il est fictif et n'est pas destiné à un usage en production.
