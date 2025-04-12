@@ -1,4 +1,5 @@
 import functools
+import logging
 from sqlalchemy.orm import sessionmaker
 from .db_engine import engine
 
@@ -17,11 +18,11 @@ def with_db_session(func):
         db = SessionLocal()
         try:
             result = func(*args, db=db, **kwargs)
+            return result
         except Exception as e:
             db.rollback()
-            raise e
+            logging.error(f"Erreur dans la fonction {func.__name__} : {e}")
+            raise
         finally:
             db.close()
-        return result
-
     return wrapper

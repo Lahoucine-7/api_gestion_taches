@@ -110,3 +110,18 @@ def test_delete_task(test_client):
 
     get_resp = test_client.get(f"/api/tasks/{task_id}")
     assert get_resp.status_code == 404
+
+
+def test_create_task_missing_fields(test_client):
+    payload = {"description": "Sans titre ni statut"}
+    response = test_client.post("/api/tasks", json=payload)
+    assert response.status_code == 400
+    data = response.get_json()
+    assert "error" in data
+
+
+def test_get_nonexistent_task(test_client):
+    response = test_client.get("/api/tasks/9999")  # ID qui n'existe pas
+    assert response.status_code == 404
+    data = response.get_json()
+    assert "error" in data

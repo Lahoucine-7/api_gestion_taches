@@ -1,4 +1,3 @@
-# app/routes.py
 from flask import Blueprint, request, jsonify
 import datetime
 from .models import Task
@@ -7,10 +6,34 @@ from .db_session import with_db_session
 bp = Blueprint("tasks", __name__)
 
 
+def validate_task_data(data: dict, require_title_status: bool = True) -> str | None:
+    """
+    Valide les données reçues pour créer ou mettre à jour une tâche.
+
+    Args:
+        data (dict): Les données JSON reçues dans la requête.
+        require_title_status (bool): Indique si 'title' et 'status' doivent être obligatoires.
+
+    Returns:
+        str | None: Retourne un message d'erreur si problème, sinon None.
+    """
+    if not data:
+        return "Requête vide ou invalide."
+    if require_title_status:
+        if not data.get("title") or not data.get("status"):
+            return "Les champs 'title' et 'status' sont obligatoires."
+    if "due_date" in data and data["due_date"]:
+        try:
+            datetime.datetime.fromisoformat(data["due_date"])
+        except ValueError:
+            return "Format de 'due_date' invalide. Utilisez le format ISO (YYYY-MM-DDTHH:MM:SS)."
+    return None
+
+
 @bp.route("/", methods=["GET"])
 def index_api():
     """
-    Route de base du blueprint, indiquant les endpoints disponibles.
+    Route d'accueil de l'API.
     """
     return (
         jsonify(
@@ -26,7 +49,7 @@ def index_api():
 @with_db_session
 def get_tasks(db):
     """
-    Récupère toutes les tâches et les renvoie sous forme de liste JSON.
+    Récupère toutes les tâches.
     """
     tasks = db.query(Task).all()
     return jsonify([task.to_dict() for task in tasks]), 200
@@ -49,36 +72,23 @@ def get_task(task_id, db):
 def create_task(db):
     """
     Crée une nouvelle tâche à partir des données JSON fournies.
-    Renvoie la tâche créée.
     """
     data = request.get_json()
-    if not data or not data.get("title") or not data.get("status"):
-        return (
-            jsonify({"error": "Les champs 'title' et 'status' sont obligatoires."}),
-            400,
-        )
+    error = validate_task_data(data)
+    if error:
+        return jsonify({"error": error}), 400
 
     due_date = None
-    due_date_str = data.get("due_date")
-    if due_date_str:
-        try:
-            due_date = datetime.datetime.fromisoformat(due_date_str)
-        except ValueError:
-            return (
-                jsonify(
-                    {
-                        "error": "Format de due_date invalide. Utilisez le format ISO (YYYY-MM-DDTHH:MM:SS)."
-                    }
-                ),
-                400,
-            )
+    if data.get("due_date"):
+        due_date = datetime.datetime.fromisoformat(data["due_date"])
 
     new_task = Task(
-        title=data.get("title"),
+        title=data["title"],
         description=data.get("description"),
         due_date=due_date,
-        status=data.get("status"),
+        status=data["status"],
     )
+
     db.add(new_task)
     db.commit()
     db.refresh(new_task)
@@ -89,13 +99,16 @@ def create_task(db):
 @with_db_session
 def update_task(task_id, db):
     """
-    Met à jour une tâche existante avec les données fournies.
-    Renvoie la tâche mise à jour.
+    Met à jour une tâche existante avec les données JSON fournies.
     """
     data = request.get_json()
     task = db.get(Task, task_id)
     if not task:
         return jsonify({"error": "Task not found"}), 404
+
+    error = validate_task_data(data, require_title_status=False)
+    if error:
+        return jsonify({"error": error}), 400
 
     if "title" in data:
         task.title = data["title"]
@@ -104,19 +117,8 @@ def update_task(task_id, db):
     if "status" in data:
         task.status = data["status"]
     if "due_date" in data:
-        due_date_str = data.get("due_date")
-        if due_date_str:
-            try:
-                task.due_date = datetime.datetime.fromisoformat(due_date_str)
-            except ValueError:
-                return (
-                    jsonify(
-                        {
-                            "error": "Format de due_date invalide. Utilisez le format ISO (YYYY-MM-DDTHH:MM:SS)."
-                        }
-                    ),
-                    400,
-                )
+        if data["due_date"]:
+            task.due_date = datetime.datetime.fromisoformat(data["due_date"])
         else:
             task.due_date = None
 
@@ -129,12 +131,12 @@ def update_task(task_id, db):
 @with_db_session
 def delete_task(task_id, db):
     """
-    Supprime la tâche spécifiée par son ID.
-    Renvoie un message de confirmation.
+    Supprime une tâche spécifique par son ID.
     """
     task = db.get(Task, task_id)
     if not task:
         return jsonify({"error": "Task not found"}), 404
+
     db.delete(task)
     db.commit()
     return jsonify({"message": "Task deleted"}), 200
